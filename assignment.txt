@@ -656,3 +656,922 @@ int main()
     convert(s, a, b1, b2, a1, a2, b);
     return 0;
 }
+
+1. Let you are EVE and the ciphertext received by you is
+                    OJLETXVNETWMFGCUANA
+
+The encryption
+algorithm is autokey cipher. Find the plaintext.
+Soln: #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+
+#define ALPHABET_SIZE 26
+
+
+void decryptAutokeyCipher(char key, const char *cipher, char *plain) {
+    int length = strlen(cipher);
+    char keyStream[length + 1];
+    char k = key;
+    int i;
+
+   
+    for (i = 0; i < length-1; i++) {
+        keyStream[i] = k;
+        k = (cipher[i] - keyStream[i] + ALPHABET_SIZE) % ALPHABET_SIZE + 'A';
+        plain[i] = (cipher[i] - keyStream[i] + ALPHABET_SIZE) % ALPHABET_SIZE + 'A';
+    }
+    plain[length] = '\0';
+}
+
+void Autokey_Cipher(const char *cipher) {
+    char plain[strlen(cipher) + 1];
+    char key;
+   
+    for (key = 'A'; key <= 'Z'; key++) {
+        decryptAutokeyCipher(key, cipher, plain);
+        printf("Key: %c -> Plaintext: %s\n", key, plain);
+    }
+}
+
+int main() {
+	char CIPHER[100];
+	fgets(CIPHER, 100, stdin);
+    Autokey_Cipher(CIPHER);
+    return 0;
+}
+2. Encrypt 
+A THIRD EYE IS OBSERVING BE ALERT
+(Without space) using key SECURE.
+
+Using Vigenere Cipher.
+
+Soln: #include<stdio.h>
+#include<string.h>
+
+void vig_encrypt(char text[], char key[], char encryptedText[],int text_length, int key_length) {
+    for (int i = 0; i < text_length; i++) {
+        char textChar = text[i];
+        char keyChar = key[i % key_length];
+        encryptedText[i] = ((textChar - 'A') + (keyChar - 'A')) % 26 + 'A';
+    }
+    encryptedText[text_length] = '\0';
+}
+int main() {
+    char txt[] = "ATHIRDEYEISOBSERVINGBEALERT";
+    char k[] = "SECURE";
+    int length = strlen(txt);
+    int key_length = strlen(k);
+    char en_txt[length + 1];
+
+    vig_encrypt(txt, k, en_txt,length,key_length);
+
+    printf("Encrypted Text: %s\n", en_txt);
+
+    return 0;
+}
+
+4.  Encrypt    BE ALERT (without space) using playfair cipher.(Key matrix is A at bottom left and Z at top right)
+
+Soln: #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void checkPlainText(char actualPtext[], char plaintxt[], int length)
+{
+    int i, j, k;
+
+    for (i = 0; i < length; i++)
+    {
+        if (actualPtext[i] == 'J')
+        {
+            actualPtext[i] = 'I';
+        }
+    }
+
+    j = 0;
+    k = 0;
+
+    while (j < length)
+    {
+        if (j < length - 1 && actualPtext[j] == actualPtext[j + 1])
+        {
+            plaintxt[k++] = actualPtext[j++];
+            plaintxt[k++] = 'X';
+        }
+        else
+        {
+            if (j == length - 1)
+            {
+                plaintxt[k++] = actualPtext[j++];
+                plaintxt[k++] = 'X';
+            }
+            else
+            {
+                plaintxt[k++] = actualPtext[j++];
+                plaintxt[k++] = actualPtext[j++];
+            }
+        }
+    }
+
+    plaintxt[k] = '\0';
+
+    printf("Correct Plaintext: %s\n", plaintxt);
+}
+
+void search(char mtx[5][5], char a, char b, int arr[])
+{
+    int i, j;
+
+    for (i = 0; i < 5; i++)
+    {
+
+        for (j = 0; j < 5; j++)
+        {
+
+            if (mtx[i][j] == a)
+            {
+                arr[0] = i;
+                arr[1] = j;
+            }
+            else if (mtx[i][j] == b)
+            {
+                arr[2] = i;
+                arr[3] = j;
+            }
+        }
+    }
+}
+
+void encrypt(char plainTxt[], char str[], char matrix[5][5], int length)
+{
+    int loc[4];
+
+    for (int i = 0; i < length; i += 2)
+    {
+
+        search(matrix, plainTxt[i], plainTxt[i + 1], loc);
+
+        if (loc[0] == loc[2])
+        {
+            str[i] = matrix[loc[0]][(loc[1] + 1) % 5];
+            str[i + 1] = matrix[loc[2]][(loc[3] + 1) % 5];
+        }
+        else if (loc[1] == loc[3])
+        {
+            str[i] = matrix[(loc[0] + 1) % 5][loc[1]];
+            str[i + 1] = matrix[(loc[2] + 1) % 5][loc[3]];
+        }
+        else
+        {
+            str[i] = matrix[loc[0]][loc[3]];
+            str[i + 1] = matrix[loc[2]][loc[1]];
+        }
+    }
+}
+
+int main()
+{
+    char matrix[5][5] = {
+        {'L', 'Q', 'U', 'X', 'Z'},
+        {'G', 'M', 'R', 'V', 'Y'},
+        {'D', 'H', 'N', 'S', 'W'},
+        {'B', 'E', 'I', 'O', 'T'},
+        {'A', 'C', 'F', 'K', 'P'}};
+
+    char actual_plaintext[100];
+    char plaintext[100];
+    char str[100];
+        
+    printf("Enter the plaintext: ");
+    scanf("%s", actual_plaintext);
+    
+    int length = strlen(actual_plaintext);
+    
+    check_plain_text(actual_plaintext, plaintext, length);
+
+    int plaintext_length = strlen(plaintext);
+    
+    encrypt(plaintext, str, matrix, plaintext_length);
+    
+    printf("Ciphertext: %s\n", str);
+    return 0;
+}
+
+5. With the same key matrix decrypt
+
+PBNEGNTMIOWDPBQEFIVL
+Soln: #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void search(char matrix[5][5], char a, char b, int arr[])
+{
+    int i, j;
+
+    for (i = 0; i < 5; i++)
+    {
+
+        for (j = 0; j < 5; j++)
+        {
+
+            if (matrix[i][j] == a)
+            {
+                arr[0] = i;
+                arr[1] = j;
+            }
+            else if (matrix[i][j] == b)
+            {
+                arr[2] = i;
+                arr[3] = j;
+            }
+        }
+    }
+}
+
+void decrypt(char ciphertext[], char str[], char matrix[5][5], int length)
+{
+    int location[4];
+
+	int i;
+    for (i = 0; i < length; i += 2)
+    {
+
+        search(matrix, ciphertext[i], ciphertext[i + 1], location);
+
+        if (location[0] == location[2])
+        {
+            str[i] = matrix[location[0]][(location[1] - 1 + 5) % 5];
+            str[i + 1] = matrix[location[2]][(location[3] - 1 + 5) % 5];
+        }
+        else if (location[1] == location[3])
+        {
+            str[i] = matrix[(location[0] - 1 + 5) % 5][location[1]];
+            str[i + 1] = matrix[(location[2] - 1 + 5) % 5][location[3]];
+        }
+        else
+        {
+            str[i] = matrix[location[0]][location[3]];
+            str[i + 1] = matrix[location[2]][location[1]];
+        }
+    }
+    str[i] = '\0';
+}
+
+int main()
+{
+    char matrix[5][5] = {
+        {'L', 'Q', 'U', 'X', 'Z'},
+        {'G', 'M', 'R', 'V', 'Y'},
+        {'D', 'H', 'N', 'S', 'W'},
+        {'B', 'E', 'I', 'O', 'T'},
+        {'A', 'C', 'F', 'K', 'P'}};
+
+    char ciphertext[100];
+    
+    printf("Enter the ciphertext: ");
+    scanf("%s", ciphertext);
+    
+    int length = strlen(ciphertext);
+    
+    char str[100];
+    
+    decrypt(ciphertext, str, matrix, length);
+    printf("Plaintext: %s\n", str);
+    printf("length: %ld", strlen(str));
+    
+    return 0;
+}
+
+6. Let take
+a string “HELLO WORLD” and a 5 X 5 table. Place the characters of the string considering
+from left to right but removing the duplicates. Then place the remaining characters
+from A to Z without taking ‘J’. Using this as the key of playflair cipher some plaintext
+is encrypted to “LFGDNWDPWOCV”. Write a program to find the plaintext.
+
+Soln: #include <stdio.h>
+#include<stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+void create_matrix(char matrix[5][5], char input[])
+{
+    int used[26] = {0};
+    int index = 0;
+    int length = strlen(input);
+
+    for (int i = 0; i < length; i++)
+    {
+        char ch = input[i];
+        if (!used[ch - 'A'])
+        {
+            used[ch - 'A'] = 1;
+            matrix[index / 5][index % 5] = ch;
+            index++;
+        }
+    }
+    for (char ch = 'A'; ch <= 'Z'; ch++)
+    {
+        if (ch != 'J' && !used[ch - 'A'])
+        {
+            matrix[index / 5][index % 5] = ch;
+            index++;
+        }
+    }
+}
+void clean_text(char input[])
+{
+	int length = strlen(input);
+	int count = 0;
+	for(int i = 0; i < length ; i++)
+	{
+		if(input[i] != ' ')
+		{
+			input[count++] = input[i];
+		}
+	}
+	input[count] = '\0';
+}
+
+
+void search(char matrix[5][5], char a, char b, int arr[])
+{
+    int i, j;
+
+    for (i = 0; i < 5; i++)
+    {
+
+        for (j = 0; j < 5; j++)
+        {
+
+            if (matrix[i][j] == a)
+            {
+                arr[0] = i;
+                arr[1] = j;
+            }
+            else if (matrix[i][j] == b)
+            {
+                arr[2] = i;
+                arr[3] = j;
+            }
+        }
+    }
+}
+
+void decrypt(char ciphertext[], char str[], char matrix[5][5], int length)
+{
+    int location[4];
+	
+	int i;
+    for (i = 0; i < length; i += 2)
+    {
+
+        search(matrix, ciphertext[i], ciphertext[i + 1], location);
+
+        if (location[0] == location[2])
+        {
+            str[i] = matrix[location[0]][(location[1] - 1 + 5) % 5];
+            str[i + 1] = matrix[location[2]][(location[3] - 1 + 5) % 5];
+        }
+        else if (location[1] == location[3])
+        {
+            str[i] = matrix[(location[0] - 1 + 5) % 5][location[1]];
+            str[i + 1] = matrix[(location[2] - 1 + 5) % 5][location[3]];
+        }
+        else
+        {
+            str[i] = matrix[location[0]][location[3]];
+            str[i + 1] = matrix[location[2]][location[1]];
+        }
+    }
+    str[i] = '\0';
+}
+
+int main()
+{
+    char matrix[5][5];
+    char input[] = "HELLO WORLD";
+    clean_text(input);
+
+    create_matrix(matrix, input);
+
+    printf("5x5 Matrix:\n");
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            printf("%c ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    printf("Enter ciphertext: ");
+    char ciphertext[100];
+    scanf("%s", ciphertext);
+    int length = strlen(ciphertext);
+    char str[100];
+    decrypt(ciphertext, str, matrix, length);
+    printf("Plaintext: %s\n", str);
+    return 0;
+}
+
+1. Plaintext given (Do not remove spaces)
+
+IIEST Shibpur  owes its origin to the erstwhile Bengal Engineering College, the history of which goes to the nineteenth century when industries in the sense we understand today were practically absent. Prompted by the idea of meeting the requirement of trained engineering personnel for the Public Works Department the then council of Education Bengal decided to open Civil Engineering classes and a Professorship in Civil Engineering was created at Hindu College Calcutta
+
+
+Chaotic logistic map is defined by  
+  x_{n+1}=rx_{n}(1-x_{n}),
+
+where r are those in the interval [0, 4], so that xn remains bounded on [0, 1]
+
+Generate a sequence of length 100 using key r=3.741 and x_n = 0.748
+
+Take the last ten entries.
+
+Sort those to get a permutation based on placeholder like (will be different for your case)
+
+1   2    3   4   5   6   7   8   9   10
+
+5   7   1    2   8    10  9   3    6   4  
+
+Break the plaintext into 10 columns (add extra character if length is not divisible by 10) and arrange the plaintext rowwise. 
+
+Permute the columns based on the permutation. 
+
+Represent the permuted columns by reading those columns.
+
+Generate the ciphertext.
+
+Soln: #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define COLS 10
+
+void chaotic_map(double r,double arr[])
+{
+	arr[0]=0.748;
+	for(int i=1;i<=100;i++)
+	{
+		arr[i]=r*arr[i-1]*(1-arr[i-1]);
+	}
+}
+ 
+int main()
+{
+	char plaintext[1024];
+	
+	char encrypted[1024];
+	
+	double arr[100];
+	double r=3.741;
+	
+	printf("enter the plaintext:");
+	fgets(plaintext,sizeof(plaintext),stdin);
+	plaintext[strcspn(plaintext, "\n")] = '\0';
+	
+	chaotic_map(r,arr);
+	
+	double arr10[10];
+	for(int i=0;i<10;i++)
+	{
+		arr10[i]=arr[90+i];	
+	}
+	
+	for (int i=0; i<10; i++)
+	{
+		printf("%d: %lf \n",i,arr10[i]);
+	}
+	printf("\n");
+	
+	int n=10;
+	for (int i = 0; i < n; ++i)
+	{
+      		for (int j = i + 1; j < n; ++j)
+      		{
+         		if (arr10[i] > arr10[j])
+         		{
+            			double a = arr10[i];
+            			arr10[i] = arr10[j];
+            			arr10[j] = a;
+         		}
+      		}
+   	}
+	
+	int map[10];
+	for(int i=0;i<10;i++)
+	{
+		for(int j=0;j<10;j++)
+		{
+			if(arr10[i]==arr[j+90])
+			{
+				map[i]=j;
+			}
+		}
+		
+	}
+	printf("the mapped values are:\n");
+	for(int i=0;i<10;i++)
+	{
+		printf("%d  %d\n",i,map[i]);
+	}
+	
+	int length = strlen(plaintext);
+        int rows = (length + COLS - 1) / COLS;
+
+    char matrix[rows][COLS];
+
+    int k = 0;
+    for (int i = 0; i < rows; i++) 
+    {
+        for (int j = 0; j < COLS; j++) 
+        {
+            if (k < length) 
+            {
+                matrix[i][j] = plaintext[k++];
+            } else 
+            {
+                matrix[i][j] = 'z';  
+            }
+        }
+    }
+
+   
+    printf("Original Matrix:\n");
+    for (int i = 0; i < rows; i++) 
+    {
+        for (int j = 0; j < COLS; j++) 
+        {
+            printf("%c ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+
+   
+    char final[rows][COLS];
+    printf("Rearranging columns based on encryption indices...\n");
+    for (int i = 0; i < COLS; i++) 
+    {
+        printf("Column %d (old index %d):\n", i, map[i]);
+        for (int j = 0; j < rows; j++) 
+        {
+            final[j][i] = matrix[j][map[i]];
+        }
+    }
+
+    char answer[500];
+    printf("Final Matrix:\n");
+    for (int i = 0; i < rows; i++) 
+    {
+        for (int j = 0; j < COLS; j++) 
+        {
+            printf("%c ", final[i][j]);
+        }
+        printf("\n");
+    }
+    int in=0;
+    for(int i=0;i<COLS;i++)
+    {
+    	for(int j=0;j<rows;j++)
+    	{
+    		answer[in++]=final[j][i];
+    	}
+    }
+    
+    printf("the ciphertext is:\n");
+    
+    int si=strlen(answer);
+    for(int i=0;i<in;i++)
+    {
+       printf("%c",answer[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
+
+2. For this ciphertext you have received, try to apply Brute Force attack using different keys (different r only, different x_n only, both r and x_n are different).
+i) r=3.740, 3.74104, 3.730999
+  but x_n = 0.748
+
+
+ii)x_n = 0.747. 0.7469, 0.7470078
+but r=3.741
+
+iii) Mix of r and x_n
+
+Soln: #include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+void swap(double *xp, double *yp)
+{
+    double temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+void swap_int(int *xp, int *yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+void selectionSort(double arr[],int map[], int n)
+{
+    int i, j, min_idx;
+
+    for (i = 0; i < n-1; i++)
+    {
+        min_idx = i;
+        for (j = i+1; j < n; j++)
+          if (arr[j] < arr[min_idx])
+            min_idx = j;
+           if(min_idx != i)
+            swap(&arr[min_idx], &arr[i]);
+            swap_int(&map[min_idx], &map[i]);
+    }
+}
+
+void percentage(double r,double xn){
+    char cipherText[] = " orhlEg rhterdnesycbmh hmanrrietoEBien nsngwd axIpi snelh sicei u el. eiqo ne rmhltltvesPhirrHetisieBioeoo hwthenecneierternhWr ccgdCnaarie tluxS   hlietiotti nedr r o rtgpfb t fneo n f Egtd xSwieen ty hnyu  t tspemeeies cphudedngcds ia ClxIutttgeeiw nenesnt l banufeglPkee i oirerilieigaErsowargshten sedopyPy gi n  usnnood lisop nanexheg  gCh get stwawiet e nneot aenune il oCnsaocxb nrenl fen hre dratddte dineottiaa ies svec ltxT oti n,oc eunisraaaotfterieolD c  cpEgaein euCx";
+    int size = strlen(cipherText);
+    // printf("Size of cipherText: %d\n", size);
+    int n_cols = 10;
+    int n_rows = (size/n_cols); 
+    char matrix[n_rows][n_cols];
+    int k  = 0;
+    for(int i = 0;i<n_cols;i++){
+        for(int j = 0;j<n_rows;j++){
+            matrix[j][i] = cipherText[k];
+            k++;
+            if(k>=size+1){
+                matrix[j][i] = 'x';
+            }
+        }
+    }
+
+    //  printf("Original Matrix: \n");
+    // for(int i = 0;i<n_rows;i++){
+    //     for(int j = 0;j<n_cols;j++){
+    //         printf("%c ",matrix[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+    double sequence[100];
+    sequence[0] = xn;
+    for(int i = 1;i<100;i++){
+        sequence[i] = r*sequence[i-1]*(1-sequence[i-1]);
+    }
+   
+    double last_10_sequence[10];
+    int map[10];
+    for(int i= 90;i<100;i++){
+        last_10_sequence[i-90] = sequence[i];
+        map[i-90] = (i-90);
+    }
+    // printf("Last 10 Logistic sequence: \n");
+    // for(int i = 0;i<10;i++){
+    //     printf("%f\t%d\n",last_10_sequence[i],map[i]);
+    // }
+    selectionSort(last_10_sequence,map,10);
+    //  printf("Last 10 sorted Logistic sequence: \n");
+    // for(int i = 0;i<10;i++){
+    //     printf("%f\t%d\n",last_10_sequence[i],map[i]);
+    // }
+
+    char new_matrix[n_rows][n_cols];
+    for(int i = 0;i<n_rows;i++){
+        for(int j = 0;j<n_cols;j++){
+            new_matrix[i][map[j]] = matrix[i][j];
+        }
+    }
+
+    // printf("New Matrix: \n");
+    // for(int i = 0;i<n_rows;i++){
+    //     for(int j = 0;j<n_cols;j++){
+    //         printf("%c ",new_matrix[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+    char plainText[size+10];
+    k = 0;
+    for(int i = 0;i<n_rows;i++){
+        for(int j = 0;j<n_cols;j++){
+            plainText[k] = new_matrix[i][j];
+            k++;
+        }
+    }
+
+    printf("Cipher Text:%s\n",plainText);
+    char original_text[] = "IIEST Shibpur  owes its origin to the erstwhile Bengal Engineering College, the history of which goes to the nineteenth century when industries in the sense we understand today were practically absent. Prompted by the idea of meeting the requirement of trained engineering personnel for the Public Works Department the then council of Education Bengal decided to open Civil Engineering classes and a Professorship in Civil Engineering was created at Hindu College Calcuttaxxxxxxxx��";
+    int count = 0;
+    int original_size = strlen(plainText);
+    for(int i = 0;i<original_size;i++){
+        if(original_text[i] != plainText[i]){
+            count++;
+        }
+    }
+    double devation = ((double)count/(double)original_size)*100;
+    printf("Deviation: %f\n",devation);
+}
+
+int main(){
+    percentage(3.741,0.748);
+    percentage(3.740,0.748);
+    percentage(3.74104,0.748);
+    percentage(3.730999,0.748);
+
+
+    return 0;
+}
+
+1. Write a program to find the output of first round Feistel cipher in DES. Use the standard DES S Box for first round. 
+
+Soln: #include <stdio.h>
+#include <stdint.h>
+
+int S_BOX[8][4][16] = {
+    {
+        {14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
+        {0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8},
+        {4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0},
+        {15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13}
+    },
+    {
+        {15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10},
+        {3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5},
+        {0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15},
+        {13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9}
+    },
+    {
+        {10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8},
+        {13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1},
+        {13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7},
+        {1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12}
+    },
+    {
+        {7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15},
+        {13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9},
+        {10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4},
+        {3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14}
+    },
+    {
+        {2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9},
+        {14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6},
+        {4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14},
+        {11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3}
+    },
+    {
+        {12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11},
+        {10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8},
+        {9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6},
+        {4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13}
+    },
+    {
+        {4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1},
+        {13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6},
+        {1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2},
+        {6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12}
+    },
+    {
+        {13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7},
+        {1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2},
+        {7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8},
+        {2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}
+    }
+};
+
+uint64_t expand(uint32_t input) {
+    uint64_t expanded = 0;
+    
+    int E[48] = {
+        32, 1, 2, 3, 4, 5,
+        4, 5, 6, 7, 8, 9,
+        8, 9, 10, 11, 12, 13,
+        12, 13, 14, 15, 16, 17,
+        16, 17, 18, 19, 20, 21,
+        20, 21, 22, 23, 24, 25,
+        24, 25, 26, 27, 28, 29,
+        28, 29, 30, 31, 32, 1
+    };
+
+    for (int i = 0; i < 48; i++) {
+        expanded <<= 1;
+        expanded |= (input >> (32 - E[i])) & 1;
+    }
+    
+    return expanded;
+}
+
+
+uint32_t apply_s_boxes(uint64_t input) {
+    uint32_t output = 0;
+    // Process input 6 bits at a time using the S-Boxes
+    for (int i = 0; i < 8; i++) {
+        int row = ((input >> (42 - 6 * i)) & 0x20) | ((input >> (42 - 6 * i - 5)) & 0x01);
+        int col = (input >> (43 - 6 * i - 1)) & 0x0F;
+        output = (output << 4) | S_BOX[i][row][col];
+    }
+    return output;
+}
+
+void splitInput(uint64_t input, uint32_t *L0, uint32_t *R0) {
+    *L0 = (input >> 32) & 0xFFFFFFFF;
+    *R0 = input & 0xFFFFFFFF;
+}
+
+uint32_t feistel(uint32_t R, uint64_t K) {
+    uint64_t expanded_R = expand(R);
+    uint64_t xored = expanded_R ^ K;
+    uint32_t sbox_output = apply_s_boxes(xored);
+    // return permute(sbox_output);
+    return sbox_output;
+}
+
+int main() {
+    uint64_t input = 0x123456789abcdef0;
+    uint32_t L0, R0;
+
+    splitInput(input, &L0, &R0);
+
+    uint64_t K1 = 0x133457799BBCDFF1;
+
+    uint32_t F_output = feistel(R0, K1);
+
+    uint32_t L1 = R0;
+    uint32_t R1 = L0 ^ F_output;
+
+    printf("After Round 1:\n");
+    printf("L1: %08X\n", L1);
+    printf("R1: %08X\n", R1);
+
+    return 0;
+}
+
+2. Generate sixteen 48 bit keys from the 64 bit keys in DES.
+
+Soln: #include <stdio.h>
+#include <stdint.h>
+
+int PC1[56] = {
+    57, 49, 41, 33, 25, 17, 9,
+    1, 58, 50, 42, 34, 26, 18,
+    10, 2, 59, 51, 43, 35, 27,
+    19, 11, 3, 60, 52, 44, 36,
+    63, 55, 47, 39, 31, 23, 15,
+    7, 62, 54, 46, 38, 30, 22,
+    14, 6, 61, 53, 45, 37, 29,
+    21, 13, 5, 28, 20, 12, 4
+};
+
+int PC2[48] = {
+    14, 17, 11, 24, 1, 5, 3, 28,
+    15, 6, 21, 10, 23, 19, 12, 4,
+    26, 8, 16, 7, 27, 20, 13, 2,
+    41, 52, 31, 37, 47, 55, 30, 40,
+    51, 45, 33, 48, 44, 49, 39, 56,
+    34, 53, 46, 42, 50, 36, 29, 32
+};
+
+int shiftTable[16] = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
+
+// Function to perform left circular shift on a 28-bit value
+uint32_t leftCircularShift(uint32_t value, int shift) {
+    return ((value << shift) | (value >> (28 - shift))) & 0x0FFFFFFF;
+}
+
+// Function to apply a permutation using a table
+void permute(uint64_t *in, uint64_t *out, int *table, int inLen, int outLen) {
+    *out = 0;
+    for (int i = 0; i < outLen; i++) {
+        int bit = (int)((*in >> (inLen - table[i])) & 1);
+        *out |= (uint64_t)bit << (outLen - 1 - i);
+    }
+}
+
+int main() {
+    uint64_t inputKey = 0x1234567890abcdef;
+
+    // Parity drop
+    uint64_t permutedKey;
+    permute(&inputKey, &permutedKey, PC1, 64, 56);
+
+    uint32_t C = (permutedKey >> 28) & 0x0FFFFFFF;
+    uint32_t D = permutedKey & 0x0FFFFFFF;
+
+    uint64_t subkeys[16];
+    for (int i = 0; i < 16; i++) {
+        C = leftCircularShift(C, shiftTable[i]);
+        D = leftCircularShift(D, shiftTable[i]);
+
+        uint64_t combined = ((uint64_t)C << 28) | D;
+
+        // Compression (56 -> 48)
+        permute(&combined, &subkeys[i], PC2, 56, 48);
+
+        printf("Subkey %2d: %012llx\n", i + 1, subkeys[i]);
+    }
+
+    return 0;
+}
