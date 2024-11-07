@@ -1,0 +1,658 @@
+1. Let a message consists of UPPERCASE, LOWERCASE, NUMBER and SPACE. The key space is 63 (26+26+10+1).  Using Shift cipher encrypt the following message.
+Soln:#include<stdio.h>
+#include<string.h>
+#define MAX_SIZE 1000
+
+void encrypt(char* plainText,int keyVal,char* cipherText,char* keySpace) {
+    int i = 0;
+    // int sizeOfKeySpace= sizeof(keySpace) / sizeof(keySpace[0]);;
+    while(plainText[i] != '\0') {
+        int ind = -1;
+        for(int j = 0;j < 63; ++j) {
+            if(plainText[i] == keySpace[j]) {
+                ind = j;
+            }
+        }
+        cipherText[i] = keySpace[(keyVal+ind)%63];
+        ++i;
+    }
+    cipherText[i] = '\0';
+}
+
+void main() {
+    char plainText[MAX_SIZE];
+    char cipherText[MAX_SIZE];
+    int keyVal;
+
+    printf("Enter a plainText to encrypt: ");
+    fgets(plainText, sizeof(plainText), stdin);
+
+    printf("Enter the Key value: ");
+    scanf("%d",&keyVal);
+
+
+    char keySpace[63];
+    int ind = 0;
+    for(char ch = 'A' ;ch <= 'Z';++ch) {
+        keySpace[ind] = ch;
+        ind++;
+    }
+    for(char ch = 'a' ;ch <= 'z';++ch) {
+        keySpace[ind] = ch;
+        ind++;
+    }
+    for(char ch = '0' ;ch <= '9';++ch) {
+        keySpace[ind] = ch;
+        ind++;
+    }
+    keySpace[ind] = ' ';
+
+    encrypt(plainText,keyVal,cipherText,keySpace);
+    printf("The encrypted text is: %s\n", cipherText);
+}
+
+2.Write a program to encrypt  WE ARE LEARNING MULTIPLICATIVE CIPHER using all the possible keys.
+Soln: #include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+int main(){
+int b;
+printf("Enter the string:\n");
+char str[200];
+fgets(str, 200, stdin);
+
+
+
+b=26;
+while(b){
+
+int r1=26,r2=b;
+int t1=0,t2=1;
+
+while(r2>0){
+int q=r1/r2;
+
+int r=r1-q*r2;
+r1=r2;r2=r;
+
+int t=t1-q*t2;
+t1=t2;t2=t;
+
+if(r1==1){
+int k=b;
+
+int i;
+
+char newstr[200];
+for(i=0;i<strlen(str);i++){
+if(str[i]==32){newstr[i]=' ';continue;}
+//if(str[i]==',')continue;
+newstr[i]= (char)(65+(((str[i]*k+65)%26)));
+}
+printf("%d->",k);
+for(i=0;i<strlen(str)-1;i++){
+printf("%c",newstr[i]);
+}
+printf("\n");
+
+
+
+}
+
+}
+b--;
+}
+
+return 0;
+}
+
+3.Consider Capital and small letters, digits, space, comma and fullstop in plaintext. Now encrypt the following text using multiplicative cipher with key 29.  
+We Are Planning For a FOOTBALL Match from 4.30 P.M. to 5.29 P.M. at LORDS Ground, just after the LAB class is over. 
+
+Soln: #include <stdio.h>
+#include <string.h>
+
+int findIndex(char c) {
+    if (c >= 'A' && c <= 'Z') return c - 'A';        
+    if (c >= 'a' && c <= 'z') return c - 'a' + 26;   
+    if (c >= '0' && c <= '9') return c - '0' + 52;   
+    if (c == ' ') return 62;                         
+    if (c == ',') return 63;                         
+    if (c == '.') return 64;                         
+    return -1; 
+}
+
+char findChar(int index) {
+    if (index >= 0 && index <= 25) return 'A' + index;           
+    if (index >= 26 && index <= 51) return 'a' + (index - 26);  
+    if (index >= 52 && index <= 61) return '0' + (index - 52);   
+    if (index == 62) return ' ';                                
+    if (index == 63) return ',';                                
+    if (index == 64) return '.';                                
+    return '?'; 
+}
+
+void multiplicativeEncrypt(char* text, int key, int mod) {
+    int len = strlen(text);
+    char encrypted[500];
+    
+    for (int i = 0; i < len; i++) {
+        int index = findIndex(text[i]);
+        if (index != -1) {
+            int encryptedIndex = (index * key) % mod;
+            encrypted[i] = findChar(encryptedIndex);
+        } else {
+            encrypted[i] = text[i];
+        }
+    }
+    encrypted[len] = '\0';
+    printf("Encrypted Text: %s\n", encrypted);
+}
+
+int main() {
+    char text[] = "We Are Planning For a FOOTBALL Match from 4.30 P.M. to 5.29 P.M. at LORDS Ground, just after the LAB class is over.";
+    int key = 29;
+    int mod = 65; 
+
+    printf("Original Text: %s\n", text);
+    multiplicativeEncrypt(text, key, mod);
+
+    return 0;
+}
+
+6. Let you are EVE and have received a ciphertext
+
+ZENELLDSLEIEVSHDEWELPQDQFUQSECWASRSIACYPLALPGDZQSQGUKALIPGNY
+you know the algorithm used is multiplicative cipher. Find the plaintext.
+Soln: #include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+int main(){
+int b;
+printf("Enter the string:\n");
+char str[200];
+fgets(str, 200, stdin);
+
+
+
+b=26;
+while(b){
+
+int r1=26,r2=b;
+int t1=0,t2=1;
+
+while(r2>0){
+int q=r1/r2;
+
+int r=r1-q*r2;
+r1=r2;r2=r;
+
+int t=t1-q*t2;
+t1=t2;t2=t;
+
+if(r1==1){
+int k=b;
+
+int i;
+
+char newstr[200];
+for(i=0;i<strlen(str);i++){
+if(str[i]==32){newstr[i]=' ';continue;}
+//if(str[i]==',')continue;
+if(str[i]>=65 && str[i]<=90)
+newstr[i]= (char)(65+(((str[i]*k+65)%26)));
+if(str[i]>=97 && str[i]<=122)
+newstr[i]= (char)(97+(((str[i]*k+97)%26)));
+}
+printf("%d->",k);
+for(i=0;i<strlen(str)-1;i++){
+printf("%c",newstr[i]);
+}
+printf("\n");
+
+
+
+}
+
+}
+b--;
+}
+
+return 0;
+}
+
+
+7. Try to get the plaintext from 
+
+SXSFEYNSSTJSWBQSTWSRRSNBFSQMRBSTJSFKSNWSSNQMFSQSTWSRRSNWSISNSSHBYSTWSRKNSXSFESDDYFBRSBSXSFEYNSQSSBZSSDDSWBKXSFSQMRBQISAWZKSXSSTSFWKQSANHRSAFNSXSFEHAENSXSFOKXSMJGSSJBZSSNSFOEZKOZSXSFEWZARRSNOSLFKNOQNSISTJSFKSNWSQANHSNHRSQQJYQQKLKRKBKSQ
+
+using statistical property of English language. 
+Soln: #include <stdio.h>
+#include <string.h>
+
+#define SIZE 26
+
+
+void frequency_analysis(char *ciphertext, int freq[SIZE]) {
+    int i;
+    for (i = 0; i < strlen(ciphertext); i++) {
+        if (ciphertext[i] >= 'A' && ciphertext[i] <= 'Z') {
+            freq[ciphertext[i] - 'A']++;
+        }
+    }
+}
+
+void decrypt_caesar(char *ciphertext, int shift) {
+    int i;
+    char ch;
+    printf("Caesar Decryption with shift %d:\n", shift);
+    for (i = 0; i < strlen(ciphertext); i++) {
+        ch = ciphertext[i];
+        if (ch >= 'A' && ch <= 'Z') {
+            ch = (ch - 'A' - shift + SIZE) % SIZE + 'A';
+        }
+        printf("%c", ch);
+    }
+    printf("\n");
+}
+
+
+int multiplicative_inverse(int a) {
+    int i;
+    for (i = 1; i < SIZE; i++) {
+        if ((a * i) % SIZE == 1)
+            return i;
+    }
+    return -1;
+}
+
+
+void decrypt_multiplicative(char *ciphertext, int key) {
+    int i;
+    int inv = multiplicative_inverse(key);
+    char ch;
+
+    if (inv == -1) {
+        printf("Multiplicative Decryption with key %d is not possible.\n", key);
+        return;
+    }
+
+    printf("Multiplicative Decryption with key %d:\n", key);
+    for (i = 0; i < strlen(ciphertext); i++) {
+        ch = ciphertext[i];
+        if (ch >= 'A' && ch <= 'Z') {
+            ch = ((ch - 'A') * inv) % SIZE;
+            if (ch < 0) ch += SIZE;
+            ch += 'A';
+        }
+        printf("%c", ch);
+    }
+    printf("\n");
+}
+
+int main() {
+    char ciphertext[] = "SXSFEYNSSTJSWBQSTWSRRSNBFSQMRBSTJSFKSNWSSNQMFSQSTWSRRSNWSISNSSHBYSTWSRKNSXSFESDDYFBRSBSXSFEYNSQSSBZSSDDSWBKXSFSQMRBQISAWZKSXSSTSFWKQSANHRSAFNSXSFEHAENSXSFOKXSMJGSSJBZSSNSFOEZKOZSXSFEWZARRSNOSLFKNOQNSISTJSFKSNWSQANHSNHRSQQJYQQKLKRKBKSQ";
+
+    int freq[SIZE] = {0};
+    int shift, key;
+
+    
+    frequency_analysis(ciphertext, freq);
+
+    
+    printf("Frequency Analysis:\n");
+    for (int i = 0; i < SIZE; i++) {
+        printf("%c: %d\n", i + 'A', freq[i]);
+    }
+    printf("\n");
+
+    
+    for (shift = 1; shift < SIZE; shift++) {
+        decrypt_caesar(ciphertext, shift);
+    }
+    for (key = 1; key < SIZE; key++) {
+        decrypt_multiplicative(ciphertext, key);
+    }
+
+    return 0;
+}
+
+1.Encrypt the plaintext
+
+THEEXTRALABOFTODAYSTARTSATTWOPM 
+
+using Affine cipher
+
+With key pair (7, 11) .
+
+Soln: #include<stdio.h>
+
+int main()  
+{
+	int k1, k2;
+	char arr[100];
+	printf("Enter the key pair: ");
+	scanf("%d", &k1);
+	scanf("%d", &k2);
+
+	getchar();  
+
+	printf("Enter the text: ");
+	fgets(arr, 100, stdin);
+
+	char encrypted[100];
+	int size = 0;
+
+	
+	while (arr[size] != '\0' && arr[size] != '\n') {
+		size++;
+	}
+
+	for (int i = 0; i < size; i++) {
+		if (arr[i] >= 'A' && arr[i] <= 'Z')
+			encrypted[i] = ((arr[i] - 'A') * k1 + k2) % 26 + 'A';
+		else if (arr[i] >= 'a' && arr[i] <= 'z')
+			encrypted[i] = ((arr[i] - 'a') * k1 + k2) % 26 + 'a';
+		else
+			encrypted[i] = arr[i];
+	}
+	encrypted[size] = '\0';  
+
+	printf("The encrypted text is: \n%s\n", encrypted);
+
+	return 0;  
+}
+
+
+2. 
+
+Consider Capital and small letters, digits, space, comma and fullstop in plaintext. Now encrypt the following text using Afine cipher with.   (For multiplicative take the 5th last and for additive take 56).
+  
+We Are Planning For a FOOTBALL Match from 4.30 P.M. to 5.29 P.M. at LORDS Ground, just after the LAB class is over. 
+
+Soln: #include<stdio.h>
+#include<string.h>
+
+int main(){
+	char str[500];
+	printf("Enter the string\n");
+	fgets(str,500,stdin);
+	int k1=60,k2=56;
+	char mp[65];
+	char c='A';
+	for(int i=0;i<26;i++)
+		mp[i]=c++;
+	c='a';
+	for(int i=26;i<52;i++)
+		mp[i]=c++;
+	c='0';
+	for(int i=52;i<62;i++)
+		mp[i]=c++;
+	mp[62]=' ';
+	mp[63]=',';
+	mp[64]='.';
+	char ans[500];
+	for(int i=0;i<strlen(str);i++)
+	{
+		int pos;
+		if(str[i]>='A' && str[i]<='Z')
+			pos=str[i]-'A';
+		else if(str[i]>='a' && str[i]<='z')
+			pos=26+str[i]-'a';
+		else if(str[i]>='0' && str[i]<='9')
+			pos=52+str[i]-'0';
+		else if(str[i]=' ')
+			pos=62;
+		else if(str[i]=',')
+			pos=63;
+		else
+			pos=64;
+		ans[i]=mp[((pos*k1)%65+k2)%65];
+	}
+	ans[strlen(str)]='\0';
+	printf("The encoded string\n");
+	printf("%s\n",ans);
+}
+
+3. Let you have received a ciphertext 
+
+OINNQOALKLSFUOFGLXHOLAOHLOOJFMR 
+
+and wants to get the plaintext. You know that the technique used is AFFINE cipher. But the order of additive and Multiplicative is not known.
+
+Soln: #include<stdio.h>
+#include<string.h>
+
+int multi(int a, int m) {
+    a = a % m;
+    for (int x = 1; x < m; x++) {
+        if ((a * x) % m == 1)
+            return x;
+    }
+    return -1;
+}
+
+int main(){
+    char string[100];
+    printf("Enter the string\n");
+    fgets(string, 100, stdin);
+    int n = 26;
+    char ans[100];
+
+    for (int i = 1; i < 26; i++) {
+        int inv = multi(i, n); 
+        
+        if (inv != -1) {
+            for (int j = 0; j < 26; j++) { 
+                printf("Multiplicative key: %d , Additive key: %d\n", i, j);
+                
+                for (int k = 0; k < strlen(string); k++) {
+                    if (string[k] >= 'a' && string[k] <= 'z') {
+                        ans[k] = ((inv * (string[k] - 'a' - j + 26)) % 26) + 'a';
+                    } else if (string[k] >= 'A' && string[k] <= 'Z') {
+                        ans[k] = ((inv * (string[k] - 'A' - j + 26)) % 26) + 'A';
+                    } else {
+                        ans[k] = string[k]; 
+                    }
+                }
+                ans[strlen(string) - 1] = '\0';
+                printf("%s\n", ans);
+            }
+        }
+    }
+    return 0;
+}
+
+4.  You have received a ciphertext as
+
+GVAPYBPOHLKRFHOFYNIVYGANGHPQOXXNLAHFUBKFAPFVHNQPHONYZNOINPYHOPOVONILHMAFGVZNGSAPKKPLYO NYBPYNNAHLYGONZIYFKFBPHOHJIFILCNKNUOOINPAPYGNKPSKNRLADFCNAYVRNAFVHNYBPYNNAPYBRLACNKHLZAFHHOINNYOPANBKFSNHF JINOINAPOPHPYONAYHIPMFAWFSFASVHPYNHHZFYYNZOHPPNHOHIPSMVAPHOINSNHOMKLZNOFZFYYNZOJPOICNAXHFFYJNHILKKUKFLOOINLKVRYPRLYLBNRNYOMFAOLKOFZFYYNZOJPOILKKFUOINR
+
+You know the technique is Affine cipher. Try to break it by using statistical property of English language
+(You know the highest and second highest occurring characters in English language are 'E' and 'T'). 
+
+Soln: #include<stdio.h>
+#include<string.h>
+
+int modInverse(int a, int m) {
+    a = a % m;
+    for (int x = 1; x < m; x++) {
+        if ((a * x) % m == 1)
+            return x;
+    }
+    return -1;
+}
+
+void decode(int k1, int k2, char* string) {
+    int inv_k1 = modInverse(k1, 26);
+
+    if (inv_k1 == -1) {
+        printf("No valid multiplicative inverse for key: %d\n", k1);
+        return;
+    }
+
+    char decoded[500];
+    
+    for (int i = 0; i < strlen(string); i++) {
+        if (string[i] >= 'A' && string[i] <= 'Z') {
+            decoded[i] = (inv_k1 * ((string[i] - 'A' - k2 + 26) % 26)) % 26 + 'A';
+        } else {
+            decoded[i] = string[i]; 
+        }
+    }
+    decoded[strlen(string) - 1] = '\0';
+    printf("Decoded Text: %s\n", decoded);
+}
+
+int main() {
+    char string[500];
+    printf("Enter the string\n");
+    fgets(string, 500, stdin);
+
+    int arr[26] = {0};
+    int one = 0, two = 0;
+    int index1 = 0, index2 = 0;
+
+    for (int i = 0; i < strlen(string); i++) {
+        if (string[i] >= 'A' && string[i] <= 'Z') {
+            arr[string[i] - 'A']++;
+        }
+    }
+
+    for (int i = 0; i < 26; i++) {
+        if (one < arr[i]) {
+            one = arr[i];
+            index1 = i;
+        }
+    }
+
+    for (int i = 0; i < 26; i++) {
+        if (two < arr[i] && i != index1) {
+            two = arr[i];
+            index2 = i;
+        }
+    }
+    
+    int E_pos = 4;
+    int T_pos = 19;
+
+    int k1 = (index1 - E_pos + 26) % 26;
+    int k2 = (index2 - T_pos + 26) % 26;
+
+    printf("Using %d as multiplicative key and %d as additive key\n",k1,k2);
+    decode(k1, k2, string);
+    printf("Using %d as multiplicative key and %d as additive key\n",k2,k1);
+    decode(k2, k1, string);
+
+    return 0;
+}
+
+
+5.  Let a new cipher you have proposed .
+   
+
+C1 = [(P + b1)*a + b2] mod 26
+  and
+     C2 =   [(P *a1 + b)*a1] mod 26
+
+  where a is for multiplicative and b is for additive. 
+    
+    Encrypt THEEXTRALABOFTODAYSTARTSATTWOPM using this new cipher and compare the keyspace.
+
+Soln: #include<stdio.h>
+#include<string.h>
+
+#define MAXSIZE 10000
+
+int findInverse(int b, int n)
+{
+    int r1 = n, r2 = b, t1 = 0, t2 = 1;
+
+    while (r2)
+    {
+        int q = r1 / r2;
+
+        int r = r1 - q * r2;
+        r1 = r2;
+        r2 = r;
+
+        int t = t1 - q * t2;
+        t1 = t2;
+        t2 = t;
+    }
+    if (r1 == 1)
+        return (t1 + n) % n;
+    else
+        return -1;
+}
+
+void convert(char *s, int a, int b1, int b2, int a1, int a2, int b)
+{
+    int len = strlen(s);
+    char c1[len + 1];
+    char c2[len + 1];
+
+    for (int i = 0; i < len; i++) 
+    {
+        if (s[i] >= 'A' && s[i] <= 'Z') 
+        {
+            c1[i] = 'A' + ((((s[i]-'A') + b1) * a + b2) % 26);
+            c2[i] = 'A' + (((s[i]-'A') * a1 + b) * a2) % 26;
+        } 
+        else 
+        {
+            c1[i] = s[i];
+            c2[i] = s[i];
+        }
+    }
+
+    c1[len] = '\0';
+    c2[len] = '\0';
+
+    printf("Ciphertext for a = %d, b1 = %d, b2 = %d using C1: %s\n", a, b1, b2, c1);
+    printf("Ciphertext for a1 = %d, a2 = %d, b = %d using C2: %s\n", a1, a2, b, c2);    
+}
+
+int main()
+{
+    int keyspace1 = 0;
+    int keyspace2 = 0;
+
+    for (int a = 1; a < 26; a++)
+    {
+        if(findInverse(a, 26) == -1)
+            continue;
+        for (int b1 = 0; b1 < 26; b1++)
+        {
+            for (int b2 = 0; b2 < 26; b2++)
+            {
+                keyspace1++;
+            }
+        }
+    }
+
+    for (int a1 = 1; a1 < 26; a1++)
+    {
+        if(findInverse(a1, 26) == -1)
+            continue;
+        for (int a2 = 1; a2 < 26; a2++)
+        {
+            if(findInverse(a2, 26) == -1)
+                continue;
+            for (int b = 0; b < 26; b++)
+            {
+                keyspace2++;
+            }
+        }
+    }
+
+    char s[MAXSIZE];
+    printf("Write the plain text: ");
+    fgets(s, sizeof(s), stdin);
+
+    printf("The keyspace for the cipher1 is %d\n", keyspace1);
+    printf("The keyspace for the cipher2 is %d\n", keyspace2);
+
+    int a = 5, b1 = 8, b2 = 3, a1 = 7, b = 12, a2 = 11;
+    convert(s, a, b1, b2, a1, a2, b);
+    return 0;
+}
